@@ -1,5 +1,5 @@
-"""Utility functions for processing CSV datasets.
-"""
+import math
+
 
 def get_column(file_name, query_column, query_value, result_column=1):
     """Extract and convert values from a CSV file matching a query.
@@ -48,3 +48,42 @@ def get_column(file_name, query_column, query_value, result_column=1):
 
     f.close()
     return result
+
+
+def get_mean(array):
+    """Calculate the arithmetic mean of an array of numbers."""
+    if array is None:
+        raise TypeError("Input array cannot be None")
+    if len(array) == 0:
+        raise ValueError("Cannot calculate mean of an empty array")
+
+    return sum(array) / len(array)
+
+
+def get_median(array):
+    """Calculate the median of an array of numbers."""
+    if array is None:
+        raise TypeError("Input array cannot be None")
+    if len(array) == 0:
+        raise ValueError("Cannot calculate median of an empty array")
+
+    sorted_arr = sorted(array)
+    n = len(sorted_arr)
+    mid = n // 2
+
+    if n % 2 == 1:
+        return sorted_arr[mid]
+    else:
+        return (sorted_arr[mid - 1] + sorted_arr[mid]) / 2.0
+
+
+def get_std_dev(array):
+    """Calculate the population standard deviation of an array of numbers."""
+    if array is None:
+        raise TypeError("Input array cannot be None")
+    if len(array) == 0:
+        raise ValueError("Cannot calculate std dev of an empty array")
+
+    mean = get_mean(array)
+    variance = sum((x - mean) ** 2 for x in array) / len(array)
+    return math.sqrt(variance)
