@@ -1,51 +1,74 @@
-"""Script to extract and print emission values using my_utils.
-"""
-
 import argparse
+import sys
 import my_utils
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Extract and print emission values for a specified country.',
-        prog='print_fires'
+        description="Process agricultural fire emission data from CSV."
+    )
+
+    # Required arguments from Assignment 2 & 3
+    parser.add_argument(
+        '--file_name',
+        type=str,
+        required=True,
+        help="Path to CSV dataset"
     )
     parser.add_argument(
         '--country',
         type=str,
         required=True,
-        help='Country name to query'
+        help="Target country name"
     )
     parser.add_argument(
         '--country_column',
         type=int,
         required=True,
-        help='Zero-indexed column containing country names'
+        help="Column index for country"
     )
     parser.add_argument(
         '--fires_column',
         type=int,
         required=True,
-        help='Zero-indexed column containing fire emission values'
+        help="Column index for fire emissions"
     )
+
+    # Task 3: Optional argument for statistical operation
     parser.add_argument(
-        '--file_name',
+        '--op',
         type=str,
-        required=True,
-        help='Path to the CSV dataset file'
+        choices=['mean', 'median', 'std_dev'],
+        required=False,
+        default=None,
+        help="Optional operation: mean, median, or std_dev"
     )
 
     args = parser.parse_args()
 
-    emissions = my_utils.get_column(
-        file_name=args.file_name,
-        query_column=args.country_column,
-        query_value=args.country,
-        result_column=args.fires_column
+    # --- DEFINE 'fires' HERE ---
+    fires = my_utils.get_column(
+        args.file_name,
+        args.country_column,
+        args.country,
+        args.fires_column
     )
 
-    for value in emissions:
-        print(value)
+    if not fires:
+        print("Warning: No matching data found or array is empty.",
+              file=sys.stderr)
+        sys.exit(1)
+
+    # Task 3 operation handling
+    if args.op == 'mean':
+        print(my_utils.get_mean(fires))
+    elif args.op == 'median':
+        print(my_utils.get_median(fires))
+    elif args.op == 'std_dev':
+        print(my_utils.get_std_dev(fires))
+    else:
+        for val in fires:
+            print(val)
 
 
 if __name__ == '__main__':
